@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lab Exercise 5</title>
+</head>
+<body>
+
+    <form id="userForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="Rhonel Oyando">
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="responseMessage"></div>
+
+    <script>
+        document.getElementById('userForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const nameValue = document.getElementById('name').value;
+
+            fetch('lab5_process.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: nameValue })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('responseMessage').innerText = JSON.stringify(data);
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+
+</body>
+</html>
+
+<?php
+header('Content-Type: application/json');
+
+$rawData = file_get_contents('php://input');
+$data = json_decode($rawData, true);
+
+$name = $data['name'] ?? 'Rhonel Oyando';
+
+$response = [
+    "status" => "success",
+    "message" => "Welcome, " . $name . "!"
+];
+
+echo json_encode($response);
+?>
